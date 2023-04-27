@@ -19,11 +19,11 @@ const HABILITAR_OPERACAO_INSERIR = false;
 const AMBIENTE = 'desenvolvimento';
 
 const serial = async (
-    valoresDht11Umidade,
-    valoresDht11Temperatura,
-    valoresLuminosidade,
-    valoresLm35Temperatura,
-    valoresChave
+    valoresCaminhao01,
+    valoresCaminhao02,
+    valoresCaminhao03,
+    valoresCaminhao04,
+    valoresCaminhao05
 ) => {
     let poolBancoDados = ''
 
@@ -62,17 +62,17 @@ const serial = async (
     arduino.pipe(new serialport.ReadlineParser({ delimiter: '\r\n' })).on('data', async (data) => {
         //console.log(data);
         const valores = data.split(';');
-        const dht11Umidade = parseFloat(valores[0]);
-        const dht11Temperatura = parseFloat(valores[1]);
-        const lm35Temperatura = parseFloat(valores[2]);
-        const luminosidade = parseFloat(valores[3]);
-        const chave = parseInt(valores[4]);
+        const temp_caminhao01 = parseFloat(valores[0]);
+        const temp_caminhao02 = parseFloat(valores[1]);
+        const temp_caminhao03 = parseFloat(valores[2]);
+        const temp_caminhao04 = parseFloat(valores[3]);
+        const temp_caminhao05 = parseInt(valores[4]);
 
-        valoresDht11Umidade.push(dht11Umidade);
-        valoresDht11Temperatura.push(dht11Temperatura);
-        valoresLuminosidade.push(luminosidade);
-        valoresLm35Temperatura.push(lm35Temperatura);
-        valoresChave.push(chave);
+        valoresCaminhao01.push(temp_caminhao01);
+        valoresCaminhao02.push(temp_caminhao02);
+        valoresCaminhao03.push(temp_caminhao04);
+        valoresCaminhao04.push(temp_caminhao03);
+        valoresCaminhao05.push(temp_caminhao05);
 
         if (HABILITAR_OPERACAO_INSERIR) {
             if (AMBIENTE == 'producao') {
@@ -81,7 +81,7 @@ const serial = async (
                 // -> altere nome da tabela e colunas se necessário
                 // Este insert irá inserir dados de fk_aquario id=1 (fixo no comando do insert abaixo)
                 // >> Importante! você deve ter o aquario de id 1 cadastrado.
-                sqlquery = `INSERT INTO medida (dht11_umidade, dht11_temperatura, luminosidade, lm35_temperatura, chave, momento, fk_aquario) VALUES (${dht11Umidade}, ${dht11Temperatura}, ${luminosidade}, ${lm35Temperatura}, ${chave}, CURRENT_TIMESTAMP, 1)`;
+                sqlquery = `INSERT INTO medida (dht11_umidade, dht11_temperatura, temp_caminhao04, lm35_temperatura, temp_caminhao05, momento, fk_aquario) VALUES (${temp_caminhao01}, ${temp_caminhao02}, ${temp_caminhao04}, ${temp_caminhao03}, ${temp_caminhao05}, CURRENT_TIMESTAMP, 1)`;
 
                 // CREDENCIAIS DO BANCO REMOTO - SQL SERVER
                 // Importante! você deve ter criado o usuário abaixo com os comandos presentes no arquivo
@@ -90,7 +90,7 @@ const serial = async (
 
                 function inserirComando(conn, sqlquery) {
                     conn.query(sqlquery);
-                    console.log("valores inseridos no banco: ", dht11Umidade + ", " + dht11Temperatura + ", " + luminosidade + ", " + lm35Temperatura + ", " + chave)
+                    console.log("valores inseridos no banco: ", temp_caminhao01 + ", " + temp_caminhao02 + ", " + temp_caminhao04 + ", " + temp_caminhao03 + ", " + temp_caminhao05)
                 }
 
                 sql.connect(connStr)
@@ -105,10 +105,10 @@ const serial = async (
                 // Este insert irá inserir dados de fk_aquario id=1 (fixo no comando do insert abaixo)
                 // >> você deve ter o aquario de id 1 cadastrado.
                 await poolBancoDados.execute(
-                    'INSERT INTO medida (dht11_umidade, dht11_temperatura, luminosidade, lm35_temperatura, chave, momento, fk_aquario) VALUES (?, ?, ?, ?, ?, now(), 1)',
-                    [dht11Umidade, dht11Temperatura, luminosidade, lm35Temperatura, chave]
+                    'INSERT INTO medida (dht11_umidade, dht11_temperatura, temp_caminhao04, lm35_temperatura, temp_caminhao05, momento, fk_aquario) VALUES (?, ?, ?, ?, ?, now(), 1)',
+                    [temp_caminhao01, temp_caminhao02, temp_caminhao04, temp_caminhao03, temp_caminhao05]
                 );
-                console.log("valores inseridos no banco: ", dht11Umidade + ", " + dht11Temperatura + ", " + luminosidade + ", " + lm35Temperatura + ", " + chave)
+                console.log("valores inseridos no banco: ", temp_caminhao01 + ", " + temp_caminhao02 + ", " + temp_caminhao04 + ", " + temp_caminhao03 + ", " + temp_caminhao05)
 
             } else {
                 throw new Error('Ambiente não configurado. Verifique o arquivo "main.js" e tente novamente.');
@@ -123,11 +123,11 @@ const serial = async (
 
 // não altere!
 const servidor = (
-    valoresDht11Umidade,
-    valoresDht11Temperatura,
-    valoresLuminosidade,
-    valoresLm35Temperatura,
-    valoresChave
+    valoresCaminhao01,
+    valoresCaminhao02,
+    valoresCaminhao03,
+    valoresCaminhao04,
+    valoresCaminhao05
 ) => {
     const app = express();
     app.use((request, response, next) => {
@@ -138,41 +138,41 @@ const servidor = (
     app.listen(SERVIDOR_PORTA, () => {
         console.log(`API executada com sucesso na porta ${SERVIDOR_PORTA}`);
     });
-    app.get('/sensores/dht11/umidade', (_, response) => {
-        return response.json(valoresDht11Umidade);
+    app.get('/sensores/caminhao_01', (_, response) => {
+        return response.json(valoresCaminhao01);
     });
-    app.get('/sensores/dht11/temperatura', (_, response) => {
-        return response.json(valoresDht11Temperatura);
+    app.get('/sensores/caminhao_02', (_, response) => {
+        return response.json(valoresCaminhao02);
     });
-    app.get('/sensores/luminosidade', (_, response) => {
-        return response.json(valoresLuminosidade);
+    app.get('/sensores/caminhao_03', (_, response) => {
+        return response.json(valoresCaminhao03);
     });
-    app.get('/sensores/lm35/temperatura', (_, response) => {
-        return response.json(valoresLm35Temperatura);
+    app.get('/sensores/caminhao_04', (_, response) => {
+        return response.json(valoresCaminhao04);
     });
-    app.get('/sensores/chave', (_, response) => {
-        return response.json(valoresChave);
+    app.get('/sensores/caminhao_05', (_, response) => {
+        return response.json(valoresCaminhao05);
     });
 }
 
 (async () => {
-    const valoresDht11Umidade = [];
-    const valoresDht11Temperatura = [];
-    const valoresLuminosidade = [];
-    const valoresLm35Temperatura = [];
-    const valoresChave = [];
+    const valoresCaminhao01 = [];
+    const valoresCaminhao02 = [];
+    const valoresCaminhao03 = [];
+    const valoresCaminhao04 = [];
+    const valoresCaminhao05 = [];
     await serial(
-        valoresDht11Umidade,
-        valoresDht11Temperatura,
-        valoresLuminosidade,
-        valoresLm35Temperatura,
-        valoresChave
+        valoresCaminhao01,
+        valoresCaminhao02,
+        valoresCaminhao03,
+        valoresCaminhao04,
+        valoresCaminhao05
     );
     servidor(
-        valoresDht11Umidade,
-        valoresDht11Temperatura,
-        valoresLuminosidade,
-        valoresLm35Temperatura,
-        valoresChave
+        valoresCaminhao01,
+        valoresCaminhao02,
+        valoresCaminhao03,
+        valoresCaminhao04,
+        valoresCaminhao05
     );
 })();

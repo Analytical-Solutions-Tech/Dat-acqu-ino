@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Line Chart</title>
+    <title>Dashboard HealthyFish</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
     <script src="http://www.chartjs.org/dist/2.7.1/Chart.js"></script>
     <script src="http://www.chartjs.org/samples/latest/utils.js"></script>
@@ -18,40 +18,40 @@
 
 <body>
     <div>
-        <h1>Sensor DHT 11 - Umidade</h1>
-        <section style="width:100%">
-            <canvas id="dht11Umidade"></canvas>
+        <h1>1° Caminhão</h1>
+        <section style="width:95%">
+            <canvas id="chart-primeiro-caminhao"></canvas>
         </section>
-        <h1>Sensor DHT 11 - Temperatura</h1>
-        <section style="width: 100%;">
-            <canvas id="dht11Temperatura"></canvas>
+        <h1>2° Caminhão</h1>
+        <section style="width:95%;">
+            <canvas id="chart-segundo-caminhao"></canvas>
         </section>
-        <h1>Sensor Luminosidade</h1>
-        <section style="width: 100%;">
-            <canvas id="luminosidade"></canvas>
+        <h1>3° Caminhão</h1>
+        <section style="width:95%;">
+            <canvas id="chart-terceiro-caminhao"></canvas>
         </section>
-        <h1>Sensor LM 35 - Temperatura</h1>
-        <section style="width: 100%;">
-            <canvas id="lm35Temperatura"></canvas>
+        <h1>4° Caminhão</h1>
+        <section style="width:95%;">
+            <canvas id="chart-quarto-caminhao"></canvas>
         </section>
-        <h1>Sensor Chave</h1>
-        <section style="width: 100%;">
-            <canvas id="chave"></canvas>
+        <h1>5° Caminhão</h1>
+        <section style="width:95%;">
+            <canvas id="chart-quinto-caminhao"></canvas>
         </section>
     </div>
 
     <script>
-        /* -- dht11Umidade -- */
-        var contextoDht11Umidade = document.getElementById('dht11Umidade').getContext('2d');
-        contextoDht11Umidade.canvas.width = 1000;
-        contextoDht11Umidade.canvas.height = 300;
-        var dht11Umidade = new Chart(
-            contextoDht11Umidade,
+        /* -- Primeiro Caminhão -- */
+        var contextoPrimeiroCaminhao = document.getElementById('chart-primeiro-caminhao').getContext('2d');
+        contextoPrimeiroCaminhao.canvas.width = 1000;
+        contextoPrimeiroCaminhao.canvas.height = 300;
+        var primeiroCaminhao = new Chart(
+            contextoPrimeiroCaminhao,
             {
                 type: 'line',
                 data: {
                     datasets: [{
-                        label: 'Umidade',
+                        label: 'Temperatura',
                         type: 'line',
                         borderColor: ['#45b3e7'],
                         backgroundColor: ['#89cff0']
@@ -68,7 +68,7 @@
                         yAxes: [{
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Umidade'
+                                labelString: 'Temperatura'
                             },
                             ticks: {
                                 beginAtZero: true,
@@ -82,104 +82,20 @@
                 }
             }
         );
-        /* -- dht11Temperatura -- */
-        var contextoDht11Temperatura = document.getElementById('dht11Temperatura').getContext('2d');
-        contextoDht11Temperatura.canvas.width = 1000;
-        contextoDht11Temperatura.canvas.height = 300;
-        var dht11Temperatura = new Chart(
-            contextoDht11Temperatura,
+        /* -- Segundo Caminhão -- */
+        var contextoSegundoCaminhao = document.getElementById('chart-segundo-caminhao').getContext('2d');
+        contextoSegundoCaminhao.canvas.width = 1000;
+        contextoSegundoCaminhao.canvas.height = 300;
+        var segundoCaminhao = new Chart(
+            contextoSegundoCaminhao,
             {
                 type: 'line',
                 data: {
                     datasets: [{
                         label: "Temperatura",
                         type: 'line',
-                        borderColor: ['#ff3232'],
-                        backgroundColor: ['#ff7f7f']
-                    }]
-                },
-                options: {
-                    scales: {
-                        axis: "reverse",
-                        xAxes: [{
-                            distribution: 'series',
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }],
-                        yAxes: [{
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Luminosidade'
-                            },
-                            ticks: {
-                                beginAtZero: true,
-                                reverse: true
-                            }
-                        }]
-                    },
-                    animation: {
-                        duration: 0
-                    }
-                }
-            }
-        );
-        /* -- luminosidade -- */
-        var contextoLuminosidade = document.getElementById('luminosidade').getContext('2d');
-        contextoLuminosidade.canvas.width = 1000;
-        contextoLuminosidade.canvas.height = 300;
-        var luminosidade = new Chart(
-            contextoLuminosidade,
-            {
-                type: 'line',
-                data: {
-                    datasets: [{
-                        label: 'Luminosidade',
-                        type: 'line',
-                        borderColor: ['#ffd902'],
-                        backgroundColor: ['#ffe135']
-                    }]
-                },
-                options: {
-                    scales: {
-                        axis: "reverse",
-                        xAxes: [{
-                            distribution: 'series',
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }],
-                        yAxes: [{
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Luminosidade'
-                            },
-                            ticks: {
-                                beginAtZero: true,
-                                reverse: true
-                            }
-                        }]
-                    },
-                    animation: {
-                        duration: 0
-                    },
-                }
-            }
-        );
-        /* -- lm35Temperatura */
-        var contextoLm35Temperatura = document.getElementById('lm35Temperatura').getContext('2d');
-        contextoLm35Temperatura.canvas.width = 1000;
-        contextoLm35Temperatura.canvas.height = 300;
-        var lm35Temperatura = new Chart(
-            contextoLm35Temperatura,
-            {
-                type: 'line',
-                data: {
-                    datasets: [{
-                        label: 'Temperatura',
-                        type: 'line',
-                        borderColor: ['#ffd902'],
-                        backgroundColor: ['#ffe135']
+                        borderColor: ['#45b3e7'],
+                        backgroundColor: ['#89cff0']
                     }]
                 },
                 options: {
@@ -208,20 +124,20 @@
                 }
             }
         );
-        /* -- chave */
-        var contextoChave = document.getElementById('chave').getContext('2d');
-        contextoChave.canvas.width = 1000;
-        contextoChave.canvas.height = 300;
-        var chave = new Chart(
-            contextoChave,
+        /* -- Terceiro Caminhão -- */
+        var contextoTerceiroCaminhao = document.getElementById('chart-terceiro-caminhao').getContext('2d');
+        contextoTerceiroCaminhao.canvas.width = 1000;
+        contextoTerceiroCaminhao.canvas.height = 300;
+        var terceiroCaminhao = new Chart(
+            contextoTerceiroCaminhao,
             {
                 type: 'line',
                 data: {
                     datasets: [{
-                        label: 'Chave',
+                        label: 'Temperatura',
                         type: 'line',
-                        borderColor: ['#ffd902'],
-                        backgroundColor: ['#ffe135']
+                        borderColor: ['#45b3e7'],
+                        backgroundColor: ['#89cff0']
                     }]
                 },
                 options: {
@@ -236,10 +152,95 @@
                         yAxes: [{
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Chave'
+                                labelString: 'Temperatura'
                             },
                             ticks: {
                                 beginAtZero: true,
+                                reverse: true
+                            }
+                        }]
+                    },
+                    animation: {
+                        duration: 0
+                    },
+                }
+            }
+        );
+        /* -- Quarto Caminhão */
+        var contextoQuartoCaminhao = document.getElementById('chart-quarto-caminhao').getContext('2d');
+        contextoQuartoCaminhao.canvas.width = 1000;
+        contextoQuartoCaminhao.canvas.height = 300;
+        var quartoCaminhao = new Chart(
+            contextoQuartoCaminhao,
+            {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'Temperatura',
+                        type: 'line',
+                        borderColor: ['#45b3e7'],
+                        backgroundColor: ['#89cff0']
+                    }]
+                },
+                options: {
+                    scales: {
+                        axis: "reverse",
+                        xAxes: [{
+                            distribution: 'series',
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }],
+                        yAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Temperatura'
+                            },
+                            ticks: {
+                                beginAtZero: true,
+                                reverse: true
+                            }
+                        }]
+                    },
+                    animation: {
+                        duration: 0
+                    }
+                }
+            }
+        );
+        /* -- Quinto Caminhão */
+        var contextoQuintoCaminhao = document.getElementById('chart-quinto-caminhao').getContext('2d');
+        contextoQuintoCaminhao.canvas.width = 1000;
+        contextoQuintoCaminhao.canvas.height = 300;
+        var quintoCaminhao = new Chart(
+            contextoQuintoCaminhao,
+            {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'Temperatura',
+                        type: 'line',
+                        borderColor: ['#45b3e7'],
+                        backgroundColor: ['#89cff0']
+                    }]
+                },
+                options: {
+                    scales: {
+                        axis: "reverse",
+                        xAxes: [{
+                            distribution: 'series',
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }],
+                        yAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Temperatura'
+                            },
+                            ticks: {
+                                beginAtZero: true,
+                                reverse: true
                             }
                         }]
                     },
@@ -281,30 +282,30 @@
         }
 
         setInterval(() => {
-            obterDados(dht11Umidade, 'dht11/umidade');
-            obterDados(dht11Temperatura, 'dht11/temperatura');
-            obterDados(luminosidade, 'luminosidade');
-            obterDados(lm35Temperatura, 'lm35/temperatura');
-            obterDados(chave, 'chave');
-        }, 1000);
+            obterDados(primeiroCaminhao, 'caminhao_01');
+            obterDados(segundoCaminhao, 'caminhao_02');
+            obterDados(terceiroCaminhao, 'caminhao_03');
+            obterDados(quartoCaminhao, 'caminhao_04');
+            obterDados(quintoCaminhao, 'caminhao_05');
+        }, 5000);
 
     </script>
 
     <script>
-        function alertaTemperatura(temperatura) {
+        // function alertaTemperatura(temperatura) {
             
-            // Cada momento em que chegar a temperatura, passar por um filtro para ver se ela não está passando do aceitável
+        //     // Cada momento em que chegar a temperatura, passar por um filtro para ver se ela não está passando do aceitável
 
-            while() {
-                if (temperatura > -18) {
-                    alert(`Alerta !<br>A temperatura do caminhão ${} está muito alta`)
-                }
+        //     while() {
+        //         if (temperatura > -18) {
+        //             alert(`Alerta !<br>A temperatura do caminhão ${} está muito alta`)
+        //         }
     
-                else if (temperatura < -28) {
-                    alert(`Alerta !<br>A temperatura do caminhão ${} está muito baixa`)
-                }
-            }
-        }
+        //         else if (temperatura < -28) {
+        //             alert(`Alerta !<br>A temperatura do caminhão ${} está muito baixa`)
+        //         }
+        //     }
+        // }
     </script>
 </body>
 

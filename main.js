@@ -11,7 +11,7 @@ const SERVIDOR_PORTA = 3300;
 // configure a linha abaixo caso queira que os dados capturados sejam inseridos no banco de dados.
 // false -> nao insere
 // true -> insere
-const HABILITAR_OPERACAO_INSERIR = false;
+const HABILITAR_OPERACAO_INSERIR = true;
 
 // altere o valor da variável AMBIENTE para o valor desejado:
 // API conectada ao banco de dados remoto, SQL Server -> 'producao'
@@ -20,10 +20,6 @@ const AMBIENTE = 'desenvolvimento';
 
 const serial = async (
     valoresCaminhao01,
-    valoresCaminhao02,
-    valoresCaminhao03,
-    valoresCaminhao04,
-    valoresCaminhao05
 ) => {
     let poolBancoDados = ''
 
@@ -32,10 +28,10 @@ const serial = async (
             {
                 // altere!
                 // CREDENCIAIS DO BANCO LOCAL - MYSQL WORKBENCH
-                host: 'localhost',
-                user: 'USUARIO_DO_BANCO_LOCAL',
-                password: 'SENHA_DO_BANCO_LOCAL',
-                database: 'DATABASE_LOCAL'
+                host: '10.18.32.87',
+                user: 'insert',
+                password: 'insert',
+                database: 'ast'
             }
         ).promise();
     } else if (AMBIENTE == 'producao') {
@@ -43,7 +39,6 @@ const serial = async (
     } else {
         throw new Error('Ambiente não configurado. Verifique o arquivo "main.js" e tente novamente.');
     }
-
 
     const portas = await serialport.SerialPort.list();
     const portaArduino = portas.find((porta) => porta.vendorId == 2341 && porta.productId == 43);
@@ -60,28 +55,24 @@ const serial = async (
         console.log(`A leitura do arduino foi iniciada na porta ${portaArduino.path} utilizando Baud Rate de ${SERIAL_BAUD_RATE}`);
     });
     arduino.pipe(new serialport.ReadlineParser({ delimiter: '\r\n' })).on('data', async (data) => {
-        //console.log(data);
+        console.log(data);
         const valores = data.split(';');
         const temp_caminhao01 = parseFloat(valores[0]);
-        const temp_caminhao02 = parseFloat(valores[1]);
-        const temp_caminhao03 = parseFloat(valores[2]);
-        const temp_caminhao04 = parseFloat(valores[3]);
-        const temp_caminhao05 = parseInt(valores[4]);
 
         valoresCaminhao01.push(temp_caminhao01);
-        valoresCaminhao02.push(temp_caminhao02);
-        valoresCaminhao03.push(temp_caminhao04);
-        valoresCaminhao04.push(temp_caminhao03);
-        valoresCaminhao05.push(temp_caminhao05);
+
+
 
         if (HABILITAR_OPERACAO_INSERIR) {
             if (AMBIENTE == 'producao') {
+                console.log(temp_caminhao01);
+
                 // altere!
                 // Este insert irá inserir os dados na tabela "medida"
                 // -> altere nome da tabela e colunas se necessário
                 // Este insert irá inserir dados de fk_aquario id=1 (fixo no comando do insert abaixo)
                 // >> Importante! você deve ter o aquario de id 1 cadastrado.
-                sqlquery = `INSERT INTO medida (dht11_umidade, dht11_temperatura, temp_caminhao04, lm35_temperatura, temp_caminhao05, momento, fk_aquario) VALUES (${temp_caminhao01}, ${temp_caminhao02}, ${temp_caminhao04}, ${temp_caminhao03}, ${temp_caminhao05}, CURRENT_TIMESTAMP, 1)`;
+                sqlquery = `INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor) VALUES (${temp_caminhao01}, "Em trânsito", CURRENT_TIMESTAMP, 12022003)`;
 
                 // CREDENCIAIS DO BANCO REMOTO - SQL SERVER
                 // Importante! você deve ter criado o usuário abaixo com os comandos presentes no arquivo
@@ -90,7 +81,7 @@ const serial = async (
 
                 function inserirComando(conn, sqlquery) {
                     conn.query(sqlquery);
-                    console.log("valores inseridos no banco: ", temp_caminhao01 + ", " + temp_caminhao02 + ", " + temp_caminhao04 + ", " + temp_caminhao03 + ", " + temp_caminhao05)
+                    console.log("valores inseridos no banco: ", temp_caminhao01)
                 }
 
                 sql.connect(connStr)
@@ -98,6 +89,7 @@ const serial = async (
                     .catch(err => console.log("erro! " + err));
 
             } else if (AMBIENTE == 'desenvolvimento') {
+                console.log(temp_caminhao01);
 
                 // altere!
                 // Este insert irá inserir os dados na tabela "medida"
@@ -105,10 +97,10 @@ const serial = async (
                 // Este insert irá inserir dados de fk_aquario id=1 (fixo no comando do insert abaixo)
                 // >> você deve ter o aquario de id 1 cadastrado.
                 await poolBancoDados.execute(
-                    'INSERT INTO medida (dht11_umidade, dht11_temperatura, temp_caminhao04, lm35_temperatura, temp_caminhao05, momento, fk_aquario) VALUES (?, ?, ?, ?, ?, now(), 1)',
-                    [temp_caminhao01, temp_caminhao02, temp_caminhao04, temp_caminhao03, temp_caminhao05]
+                    'INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor) VALUES (?, "Em trânsito", now(), 12022003)',
+                    [temp_caminhao01]
                 );
-                console.log("valores inseridos no banco: ", temp_caminhao01 + ", " + temp_caminhao02 + ", " + temp_caminhao04 + ", " + temp_caminhao03 + ", " + temp_caminhao05)
+                console.log("valores inseridos no banco: ", temp_caminhao01)
 
             } else {
                 throw new Error('Ambiente não configurado. Verifique o arquivo "main.js" e tente novamente.');
@@ -120,59 +112,9 @@ const serial = async (
     });
 }
 
-
-// não altere!
-const servidor = (
-    valoresCaminhao01,
-    valoresCaminhao02,
-    valoresCaminhao03,
-    valoresCaminhao04,
-    valoresCaminhao05
-) => {
-    const app = express();
-    app.use((request, response, next) => {
-        response.header('Access-Control-Allow-Origin', '*');
-        response.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept');
-        next();
-    });
-    app.listen(SERVIDOR_PORTA, () => {
-        console.log(`API executada com sucesso na porta ${SERVIDOR_PORTA}`);
-    });
-    app.get('/sensores/caminhao_01', (_, response) => {
-        return response.json(valoresCaminhao01);
-    });
-    app.get('/sensores/caminhao_02', (_, response) => {
-        return response.json(valoresCaminhao02);
-    });
-    app.get('/sensores/caminhao_03', (_, response) => {
-        return response.json(valoresCaminhao03);
-    });
-    app.get('/sensores/caminhao_04', (_, response) => {
-        return response.json(valoresCaminhao04);
-    });
-    app.get('/sensores/caminhao_05', (_, response) => {
-        return response.json(valoresCaminhao05);
-    });
-}
-
 (async () => {
     const valoresCaminhao01 = [];
-    const valoresCaminhao02 = [];
-    const valoresCaminhao03 = [];
-    const valoresCaminhao04 = [];
-    const valoresCaminhao05 = [];
     await serial(
-        valoresCaminhao01,
-        valoresCaminhao02,
-        valoresCaminhao03,
-        valoresCaminhao04,
-        valoresCaminhao05
-    );
-    servidor(
-        valoresCaminhao01,
-        valoresCaminhao02,
-        valoresCaminhao03,
-        valoresCaminhao04,
-        valoresCaminhao05
+        valoresCaminhao01
     );
 })();

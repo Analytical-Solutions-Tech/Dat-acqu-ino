@@ -28,10 +28,10 @@ const serial = async (
             {
                 // altere!
                 // CREDENCIAIS DO BANCO LOCAL - MYSQL WORKBENCH
-                host: '10.18.32.87',
-                user: 'insert',
-                password: 'insert',
-                database: 'ast'
+                host: 'localhost',
+                user: 'root',
+                password: 'cimento12345',
+                database:  'ast'
             }
         ).promise();
     } else if (AMBIENTE == 'producao') {
@@ -72,7 +72,7 @@ const serial = async (
                 // -> altere nome da tabela e colunas se necessário
                 // Este insert irá inserir dados de fk_aquario id=1 (fixo no comando do insert abaixo)
                 // >> Importante! você deve ter o aquario de id 1 cadastrado.
-                sqlquery = `INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor) VALUES (${temp_caminhao01}, "Em trânsito", CURRENT_TIMESTAMP, 12022003)`;
+                sqlquery = `INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor, fkTemperaturaTransporte) VALUES (${temp_caminhao01}, "Em trânsito", CURRENT_TIMESTAMP, 12022003,4 )`;
 
                 // CREDENCIAIS DO BANCO REMOTO - SQL SERVER
                 // Importante! você deve ter criado o usuário abaixo com os comandos presentes no arquivo
@@ -97,7 +97,7 @@ const serial = async (
                 // Este insert irá inserir dados de fk_aquario id=1 (fixo no comando do insert abaixo)
                 // >> você deve ter o aquario de id 1 cadastrado.
                 await poolBancoDados.execute(
-                    'INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor) VALUES (?, "Em trânsito", now(), 12022003)',
+                    'INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor, fkTemperaturaTransporte) VALUES (?, "Em trânsito", now(), 12022003, 4)',
                     [temp_caminhao01]
                 );
                 console.log("valores inseridos no banco: ", temp_caminhao01)

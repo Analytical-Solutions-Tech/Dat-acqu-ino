@@ -20,6 +20,10 @@ const AMBIENTE = 'desenvolvimento';
 
 const serial = async (
     valoresCaminhao01,
+    valoresCaminhao02,
+    valoresCaminhao03,
+    valoresCaminhao04,
+
 ) => {
     let poolBancoDados = ''
 
@@ -58,38 +62,23 @@ const serial = async (
         console.log(data);
         const valores = data.split(';');
         const temp_caminhao01 = parseFloat(valores[0]);
+        const temp_caminhao02 = parseFloat(valores[0]);
+        const temp_caminhao03 = parseFloat(valores[0]);
+        const temp_caminhao04 = parseFloat(valores[0]);
 
         valoresCaminhao01.push(temp_caminhao01);
+        valoresCaminhao02.push(temp_caminhao02);
+        valoresCaminhao03.push(temp_caminhao03);
+        valoresCaminhao04.push(temp_caminhao04);
 
 
 
         if (HABILITAR_OPERACAO_INSERIR) {
-            if (AMBIENTE == 'producao') {
+         if (AMBIENTE == 'desenvolvimento') {
                 console.log(temp_caminhao01);
-
-                // altere!
-                // Este insert irá inserir os dados na tabela "medida"
-                // -> altere nome da tabela e colunas se necessário
-                // Este insert irá inserir dados de fk_aquario id=1 (fixo no comando do insert abaixo)
-                // >> Importante! você deve ter o aquario de id 1 cadastrado.
-                sqlquery = `INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor, fkTemperaturaTransporte) VALUES (${temp_caminhao01}, "Em trânsito", CURRENT_TIMESTAMP, 12022003,4 )`;
-
-                // CREDENCIAIS DO BANCO REMOTO - SQL SERVER
-                // Importante! você deve ter criado o usuário abaixo com os comandos presentes no arquivo
-                // "script-criacao-usuario-sqlserver.sql", presente neste diretório.
-                const connStr = "Server=servidor-acquatec.database.windows.net;Database=bd-acquatec;User Id=usuarioParaAPIArduino_datawriter;Password=#Gf_senhaParaAPI;";
-
-                function inserirComando(conn, sqlquery) {
-                    conn.query(sqlquery);
-                    console.log("valores inseridos no banco: ", temp_caminhao01)
-                }
-
-                sql.connect(connStr)
-                    .then(conn => inserirComando(conn, sqlquery))
-                    .catch(err => console.log("erro! " + err));
-
-            } else if (AMBIENTE == 'desenvolvimento') {
-                console.log(temp_caminhao01);
+                console.log(temp_caminhao02);
+                console.log(temp_caminhao03);
+                console.log(temp_caminhao04);
 
                 // altere!
                 // Este insert irá inserir os dados na tabela "medida"
@@ -97,10 +86,19 @@ const serial = async (
                 // Este insert irá inserir dados de fk_aquario id=1 (fixo no comando do insert abaixo)
                 // >> você deve ter o aquario de id 1 cadastrado.
                 await poolBancoDados.execute(
+                    'INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor, fkTemperaturaTransporte) VALUES (?, "Em trânsito", now(), 12022003, 1)',
+                    [temp_caminhao01],
+                    'INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor, fkTemperaturaTransporte) VALUES (?, "Em trânsito", now(), 12022003, 1)',
+                    [temp_caminhao02],
+                    'INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor, fkTemperaturaTransporte) VALUES (?, "Em trânsito", now(), 12022003, 2)',
+                    [temp_caminhao03],
                     'INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor, fkTemperaturaTransporte) VALUES (?, "Em trânsito", now(), 12022003, 4)',
-                    [temp_caminhao01]
+                    [temp_caminhao04],
                 );
-                console.log("valores inseridos no banco: ", temp_caminhao01)
+                console.log("valores inseridos no banco: ", temp_caminhao01);
+                console.log("valores inseridos no banco: ", temp_caminhao02);
+                console.log("valores inseridos no banco: ", temp_caminhao03);
+                console.log("valores inseridos no banco: ", temp_caminhao04);
 
             } else {
                 throw new Error('Ambiente não configurado. Verifique o arquivo "main.js" e tente novamente.');
@@ -114,7 +112,14 @@ const serial = async (
 
 (async () => {
     const valoresCaminhao01 = [];
+    const valoresCaminhao02 = [];
+    const valoresCaminhao03 = [];
+    const valoresCaminhao04 = [];
+
     await serial(
-        valoresCaminhao01
+        valoresCaminhao01,
+        valoresCaminhao02,
+        valoresCaminhao03,
+        valoresCaminhao04,
     );
 })();

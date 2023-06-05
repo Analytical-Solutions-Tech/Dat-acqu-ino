@@ -20,6 +20,7 @@ const AMBIENTE = 'desenvolvimento';
 
 const serial = async (
     valoresCaminhao01,
+    valoresCaminhao02,
 ) => {
     let poolBancoDados = ''
 
@@ -58,9 +59,10 @@ const serial = async (
         console.log(data);
         const valores = data.split(';');
         const temp_caminhao01 = parseFloat(valores[0]);
+        const temp_caminhao02 = parseFloat(valores[0]);
 
         valoresCaminhao01.push(temp_caminhao01);
-
+        valoresCaminhao02.push(temp_caminhao02);
 
 
         if (HABILITAR_OPERACAO_INSERIR) {
@@ -72,7 +74,7 @@ const serial = async (
                 // -> altere nome da tabela e colunas se necessário
                 // Este insert irá inserir dados de fk_aquario id=1 (fixo no comando do insert abaixo)
                 // >> Importante! você deve ter o aquario de id 1 cadastrado.
-                sqlquery = `INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor, fkTemperaturaTransporte) VALUES (${temp_caminhao01}, "Em trânsito", CURRENT_TIMESTAMP, 12022003,4 )`;
+                sqlquery = `INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor, fkTemperaturaTransporte) VALUES (${temp_caminhao01}, "Em trânsito", CURRENT_TIMESTAMP, 12022003, 1)`;
 
                 // CREDENCIAIS DO BANCO REMOTO - SQL SERVER
                 // Importante! você deve ter criado o usuário abaixo com os comandos presentes no arquivo
@@ -90,18 +92,22 @@ const serial = async (
 
             } else if (AMBIENTE == 'desenvolvimento') {
                 console.log(temp_caminhao01);
-
+                console.log(temp_caminhao02);
                 // altere!
                 // Este insert irá inserir os dados na tabela "medida"
                 // -> altere nome da tabela e colunas se necessário
                 // Este insert irá inserir dados de fk_aquario id=1 (fixo no comando do insert abaixo)
                 // >> você deve ter o aquario de id 1 cadastrado.
                 await poolBancoDados.execute(
-                    'INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor, fkTemperaturaTransporte) VALUES (?, "Em trânsito", now(), 12022003, 4)',
+                    'INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor, fkTemperaturaTransporte) VALUES (?, "Em trânsito", now(), 12022003, 1)',
                     [temp_caminhao01]
                 );
-                console.log("valores inseridos no banco: ", temp_caminhao01)
-
+                await poolBancoDados.execute(
+                    'INSERT INTO historicoLeitura (registro_sensor, status_transporte, data_hora, fkSensor, fkTemperaturaTransporte) VALUES (?, "Em trânsito", now(), 12022003, 5)',
+                    [temp_caminhao02]                    
+                )
+                console.log("valores inseridos no banco: ", temp_caminhao01);
+                console.log("valores inseridos no banco: ", temp_caminhao02);
             } else {
                 throw new Error('Ambiente não configurado. Verifique o arquivo "main.js" e tente novamente.');
             }
@@ -114,7 +120,9 @@ const serial = async (
 
 (async () => {
     const valoresCaminhao01 = [];
+    const valoresCaminhao02 = [];
     await serial(
-        valoresCaminhao01
+        valoresCaminhao01,
+        valoresCaminhao02,
     );
 })();
